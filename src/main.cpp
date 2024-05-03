@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <esp_now.h>
+#include <WiFi.h>
 
 #define LEFT_WIRE 12 // White
 #define RIGHT_WIRE 13 // Purple
@@ -10,18 +12,42 @@
 #define ECHO2 25
 //#define TRIG3 
 //#define ECHO3 
+typedef struct test_struct {
+  int x;
+  int y;
+} test_struct;
+
+test_struct myData;
+
+void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+  memcpy(&myData, incomingData, sizeof(myData));
+  Serial.print("Bytes received: ");
+  Serial.println(len);
+  Serial.print("x: ");
+  Serial.println(myData.x);
+  Serial.print("y: ");
+  Serial.println(myData.y);
+  Serial.println();
+}
 
 const int pwmFrequency = 200; // PWM frequency in Hz
 const int pwmResolution = 8;   // PWM resolution in bits (8-bit resolution for ESP32)
 
-int xJoystick = 0; // from -2048 to 2048
-int yJoystick = 0; // from -2048 to 2048
+int xJoystick = 0; // from -1800 to 1800
+int yJoystick = 0; // from -1800 to 1800
 
 // deadzone from -20 to 20 is all 0
 
 
 void setup(){
   Serial.begin(9600);
+  WiFi.mode(WIFI_STA);
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
+  esp_now_register_recv_cb(OnDataRecv);
+
   pinMode(LEFT_WIRE, OUTPUT);
   pinMode(RIGHT_WIRE, OUTPUT);
   pinMode(UP_WIRE, OUTPUT);
@@ -48,33 +74,34 @@ float readDistance(int TRIG, int ECHO) {
   digitalWrite(TRIG, LOW); delayMicroseconds(3);
   digitalWrite(TRIG, HIGH); delayMicroseconds(10);
   digitalWrite(TRIG, LOW);
-  unsigned long timeout=micros()+26233L;
-  while((digitalRead(ECHO)==LOW)&&(micros()<timeout));
+  unsigned long timeout = micros() + 26233L;
+  while((digitalRead(ECHO) == LOW) && (micros() < timeout));
   unsigned long start_time = micros();
-  timeout=start_time+26233L;
-  while((digitalRead(ECHO)==HIGH)&&(micros()<timeout));
+  timeout = start_time + 26233L;
+  while((digitalRead(ECHO) == HIGH) && (micros() < timeout));
   unsigned long lapse = micros() - start_time;
-  return lapse*0.01716f;
+  return lapse * 0.01716f;
 }
 
 // calls readDistance a certain amount of time 
 float averageDistance(int TRIG, int ECHO){
   unsigned long totalLapse = 0;
-
   for (int i = 0; i < 5; i++) {
     totalLapse += readDistance(TRIG, ECHO);
   }
   return totalLapse / 5;
 }
+// A8:42:E3:BA:E7:F8
+
 
 void loop(){
   float dist1 = averageDistance(TRIG1, ECHO1);
   delay(50);
   float dist2 = averageDistance(TRIG2, ECHO2);
-  Serial.print("1: ");
-  Serial.println(dist1);
-  Serial.print("2: ");
-  Serial.println(dist2);
+  // Serial.print("1: ");
+  // Serial.println(dist1);
+  // Serial.print("2: ");
+  // Serial.println(dist2);
   ledcWrite(0, 50);
   if (dist1 < 20 || dist2 < 20){
     ledcWrite(0, 0);
@@ -87,15 +114,15 @@ void loop(){
 //  delay(1000);
 //  digitalWrite(RIGHT_WIRE, LOW);
 //  delay(5000);
-//  
+ 
 //  digitalWrite(DOWN_WIRE, HIGH);
 //  delay(1000);
 //  digitalWrite(DOWN_WIRE, LOW);
 //  delay(2000);
-//
+
 //  digitalWrite(UP_WIRE, HIGH);
 //  delay(1000);
 //  digitalWrite(UP_WIRE, LOW);
-//  delay(2000); t
+//  delay(2000); 
   
 }
