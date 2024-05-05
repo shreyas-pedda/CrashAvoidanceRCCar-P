@@ -12,6 +12,7 @@
 #define ECHO2 4
 #define TRIG3 17
 #define ECHO3 5
+
 typedef struct joystick_input {
   int x; // from -1800 to 1800
   int y; // from -1800 to 1800
@@ -97,7 +98,6 @@ float averageDistance(int TRIG, int ECHO){
 
 void updateMotors(joystick_input joystick_data){
   // Map joystick input to PWM duty cycle
-  // need to take the absolute value ---
   int dutyX = map(abs(joystick_data.x), 0, 1800, 0, 255);
   int dutyY = map(abs(joystick_data.y), 0, 1800, 0, 120);
   
@@ -143,11 +143,9 @@ void updateMotors(joystick_input joystick_data){
 
 
 void loop(){
-  // float dist1 = averageDistance(TRIG1, ECHO1);
-  // delay(50);
-  // float dist2 = averageDistance(TRIG2, ECHO2);
-  // delay(50);
-  // float dist3 = averageDistance(TRIG3, ECHO3);
+  float dist1 = averageDistance(TRIG1, ECHO1);
+  float dist2 = averageDistance(TRIG2, ECHO2);
+  float dist3 = averageDistance(TRIG3, ECHO3);
   updateMotors(joystick_data);
 
   // Serial.print("1: ");
