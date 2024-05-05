@@ -12,29 +12,27 @@
 #define ECHO2 4
 #define TRIG3 17
 #define ECHO3 5
-typedef struct test_struct {
-  int x;
-  int y;
-} test_struct;
+typedef struct joystick_input {
+  int x; // from -1800 to 1800
+  int y; // from -1800 to 1800
+  bool button; // initial value false, clicking button flips boolean
+} joystick_input;
 
-test_struct myData;
+joystick_input joystick_data;
 
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
-  memcpy(&myData, incomingData, sizeof(myData));
+  memcpy(&joystick_data, incomingData, sizeof(joystick_data));
   Serial.print("Bytes received: ");
   Serial.println(len);
   Serial.print("x: ");
-  Serial.println(myData.x);
+  Serial.println(joystick_data.x);
   Serial.print("y: ");
-  Serial.println(myData.y);
+  Serial.println(joystick_data.y);
   Serial.println();
 }
 
 const int pwmFrequency = 200; // PWM frequency in Hz
 const int pwmResolution = 8;   // PWM resolution in bits (8-bit resolution for ESP32)
-
-int xJoystick = 0; // from -1800 to 1800
-int yJoystick = 0; // from -1800 to 1800
 
 // deadzone from -20 to 20 is all 0
 
