@@ -96,7 +96,20 @@ float averageDistance(int TRIG, int ECHO){
   return totalLapse / 5;
 }
 
-void updateMotors(joystick_input joystick_data){
+void updateMotors(joystick_input joystick_data, float dist1, float dist2, float dist3){
+  // Check if any distance sensor reads below 20
+  bool obstacleDetected = (dist1 < 20) || (dist2 < 20) || (dist3 < 20);
+  //TODO: FIND WAY TO REGAIN CONTROL OF CAR WITH JOYSTICK INPUT AFTER CLICKING THE BUTTON
+
+  // If obstacle detected, stop all motor movements
+  if (obstacleDetected) {
+    ledcWrite(1, 0); 
+    ledcWrite(2, 0); 
+    ledcWrite(3, 0); 
+    ledcWrite(4, 0); 
+    return; 
+  }
+
   // Map joystick input to PWM duty cycle
   int dutyX = map(abs(joystick_data.x), 0, 1800, 0, 255);
   int dutyY = map(abs(joystick_data.y), 0, 1800, 0, 120);
@@ -117,36 +130,21 @@ void updateMotors(joystick_input joystick_data){
   if (joystick_data.y < 0){
     ledcWrite(1, 0);
     ledcWrite(2, dutyY);
-  } 
-  // else if (joystick_data.y == 0) {
-  //   ledcWrite(1, 0);
-  //   ledcWrite(2, 0);
-  // }
+  } else if (joystick_data.y == 0){
+      ledcWrite(1, 0);
+      ledcWrite(2, 0);
+  }
   else{
     ledcWrite(2, 0);
     ledcWrite(1, dutyY);
   }
-
-  // if (joystick_data.y < 0){
-  //   ledcWrite(2, dutyY);
-  // } else {
-  //   ledcWrite(2, 0);
-  // }
-
-  // if (joystick_data.y > 0){
-  //   ledcWrite(1, dutyY);
-  // } else {
-  //   ledcWrite(1, 0);
-  // }
-
 }
-
 
 void loop(){
   float dist1 = averageDistance(TRIG1, ECHO1);
   float dist2 = averageDistance(TRIG2, ECHO2);
   float dist3 = averageDistance(TRIG3, ECHO3);
-  updateMotors(joystick_data);
+  updateMotors(joystick_data, dist1, dist2, dist3);
 
   // Serial.print("1: ");
   // Serial.println(dist1);
