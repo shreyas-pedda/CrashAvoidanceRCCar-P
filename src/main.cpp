@@ -26,15 +26,15 @@ const int pwmResolution = 8;   // PWM resolution in bits (8-bit resolution for E
 
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&joystick_data, incomingData, sizeof(joystick_data));
-  // Serial.print("Bytes received: ");
-  // Serial.println(len);
-  // Serial.print("x: ");
-  // Serial.println(joystick_data.x);
-  // Serial.print("y: ");
-  // Serial.println(joystick_data.y);
-  // Serial.print("button: ");
-  // Serial.println(joystick_data.button);
-  // Serial.println();
+  Serial.print("Bytes received: ");
+  Serial.println(len);
+  Serial.print("x: ");
+  Serial.println(joystick_data.x);
+  Serial.print("y: ");
+  Serial.println(joystick_data.y);
+  Serial.print("button: ");
+  Serial.println(joystick_data.button);
+  Serial.println();
 
 }
 
@@ -176,6 +176,5 @@ void loop(){
 //  delay(1000);
 //  digitalWrite(UP_WIRE, LOW);
 //  delay(2000); 
-
 
 }
