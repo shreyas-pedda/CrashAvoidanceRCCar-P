@@ -17,7 +17,7 @@ typedef struct joystick_input {
   int x; // from -1800 to 1800
   int y; // from -1800 to 1800
   // deadzone from -110 to 100
-  bool button; // initial value false, clicking button flips boolean
+  bool control; // initial value false, clicking button flips boolean
 } joystick_input;
 
 joystick_input joystick_data;
@@ -33,7 +33,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   Serial.print("y: ");
   Serial.println(joystick_data.y);
   Serial.print("button: ");
-  Serial.println(joystick_data.button);
+  Serial.println(joystick_data.control);
   Serial.println();
 
 }
