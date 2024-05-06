@@ -39,7 +39,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 }
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(115200);
   WiFi.mode(WIFI_STA);
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");
@@ -51,7 +51,7 @@ void setup(){
   pinMode(RIGHT_WIRE, OUTPUT);
   pinMode(UP_WIRE, OUTPUT);
   pinMode(DOWN_WIRE, OUTPUT);
-  // Serial.println(WiFi.macAddress());
+  Serial.println(WiFi.macAddress());
   
   pinMode(TRIG1, OUTPUT); // set up distance1 sensor pins
   pinMode(ECHO1, INPUT);
@@ -70,7 +70,11 @@ void setup(){
   ledcAttachPin(UP_WIRE, 1);
   ledcAttachPin(DOWN_WIRE, 2);
   ledcAttachPin(RIGHT_WIRE, 3);
-  ledcAttachPin(LEFT_WIRE, 4);     
+  ledcAttachPin(LEFT_WIRE, 4);    
+  ledcWrite(1, 0); 
+  ledcWrite(2, 0); 
+  ledcWrite(3, 0); 
+  ledcWrite(4, 0);  
 }
 
 // read distance sensor, return centimeters
@@ -102,17 +106,17 @@ void updateMotors(joystick_input joystick_data, float dist1, float dist2, float 
   //TODO: FIND WAY TO REGAIN CONTROL OF CAR WITH JOYSTICK INPUT AFTER CLICKING THE BUTTON
 
   // If obstacle detected, stop all motor movements
-  if (obstacleDetected) {
-    ledcWrite(1, 0); 
-    ledcWrite(2, 0); 
-    ledcWrite(3, 0); 
-    ledcWrite(4, 0); 
-    return; 
-  }
+  // if (obstacleDetected) {
+  //   ledcWrite(1, 0); 
+  //   ledcWrite(2, 0); 
+  //   ledcWrite(3, 0); 
+  //   ledcWrite(4, 0); 
+  //   return; 
+  // }
 
   // Map joystick input to PWM duty cycle
   int dutyX = map(abs(joystick_data.x), 0, 1800, 0, 255);
-  int dutyY = map(abs(joystick_data.y), 0, 1800, 0, 120);
+  int dutyY = map(abs(joystick_data.y), 0, 1800, 0, 255);
   
   if (joystick_data.x < 0){
     ledcWrite(3, 0);
